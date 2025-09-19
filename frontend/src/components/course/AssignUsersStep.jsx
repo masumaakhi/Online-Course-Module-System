@@ -1,0 +1,220 @@
+// src/components/course/AssignUsersStep.jsx
+
+import React, { useState, useEffect, useContext } from "react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { AppContext } from "../../context/AppContext";
+
+const AssignUsersStep = ({ data, updateData, onNext, onPrev, courseId, loading }) => {
+  const { backendUrl, userData } = useContext(AppContext);
+  const [assignedUsers, setAssignedUsers] = useState(data.assignedUsers || []);
+  const [availableUsers, setAvailableUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loadingUsers, setLoadingUsers] = useState(false);
+
+  const isCorporateCourse = data.audience === "corporate" && data.enrollmentType === "assigned";
+  const isCorporateAdmin = userData?.role === "corporateAdmin" || userData?.role === "admin";
+
+  useEffect(() => {
+    if (isCorporateCourse && isCorporateAdmin) fetchAvailableUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isCorporateCourse, isCorporateAdmin]);
+
+  const fetchAvailableUsers = async () => {
+    try {
+      setLoadingUsers(true);
+      const { data: response } = await axios.get(`${backendUrl}/api/admin/users`, { withCredentials: true });
+      if (response.success) {
+        const filtered = response.users.filter(
+          (u) => u.role === "student" && !assignedUsers.some((a) => a._id === u._id)
+        );
+        setAvailableUsers(filtered);
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to fetch available users");
+    } finally {
+      setLoadingUsers(false);
+    }
+  };
+
+  const filteredUsers = availableUsers.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      u.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const addUser = (u) => {
+    setAssignedUsers((p) => [...p, u]);
+    setAvailableUsers((p) => p.filter((x) => x._id !== u._id));
+  };
+  const removeUser = (id) => {
+    const found = assignedUsers.find((u) => u._id === id);
+    setAssignedUsers((p) => p.filter((u) => u._id !== id));
+    if (found) setAvailableUsers((p) => [found, ...p]);
+  };
+
+  const handleNext = () => {
+    updateData({ assignedUsers });
+   onNext({ assignedUsers });
+  };
+  const handleSkip = () => {
+    const empty = [];
+       updateData({ assignedUsers: empty });
+       onNext({ assignedUsers: empty }); // ← সবসময় payload পাঠাও
+  };
+
+  if (!isCorporateCourse || !isCorporateAdmin) {
+    return (
+      <div className="space-y-6">
+        <Header title="Assign Users" subtitle="This step is only for corporate courses with assigned enrollment." />
+        <div className="rounded-2xl border border-yellow-400/20 bg-yellow-500/10 p-4 text-sm text-yellow-200">
+          Step skipped — proceed to Review & Publish.
+        </div>
+        <NavRow onPrev={onPrev} right={
+          <button onClick={handleSkip} disabled={loading}
+            className="rounded-xl border border-white/15 px-5 py-2 text-white"
+            style={{ background: "linear-gradient(90deg,#a78bfa33,#22d3ee33)" }}>
+            Next: Review & Publish
+          </button>
+        } />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <Header title="Assign Users" subtitle="Assign employees to this corporate course." />
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Available Users */}
+        <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <div className="flex items-center justify-between">
+            <div className="text-lg font-semibold">Available Users</div>
+          </div>
+
+          <div className="mt-3">
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search by name or email…"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none placeholder:text-slate-400"
+            />
+          </div>
+
+          <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
+            {loadingUsers ? (
+              <div className="text-center text-slate-300 py-6">Loading users…</div>
+            ) : filteredUsers.length === 0 ? (
+              <div className="text-center text-slate-400 py-6">
+                {searchTerm ? "No users found for your search" : "No available users"}
+              </div>
+            ) : (
+              filteredUsers.map((u) => (
+                <div key={u._id} className="flex items-center justify-between rounded-xl border border-white/10 bg-slate-900/40 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-sky-500/20 grid place-items-center text-sky-200 text-sm font-medium">
+                      {u.name?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div className="text-sm">
+                      <div className="font-medium text-slate-200">{u.name}</div>
+                      <div className="text-slate-400">{u.email}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => addUser(u)}
+                    className="rounded-lg border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200 hover:bg-white/10"
+                  >
+                    Add
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* Assigned Users */}
+        <section className="rounded-2xl border border-white/10 bg-white/5 p-5">
+          <div className="text-lg font-semibold">Assigned Users ({assignedUsers.length})</div>
+          <div className="mt-3 space-y-2 max-h-96 overflow-y-auto">
+            {assignedUsers.length === 0 ? (
+              <div className="text-center text-slate-400 py-6">No users assigned yet</div>
+            ) : (
+              assignedUsers.map((u) => (
+                <div key={u._id} className="flex items-center justify-between rounded-xl border border-white/10 bg-emerald-500/10 p-3">
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-emerald-500/20 grid place-items-center text-emerald-200 text-sm font-medium">
+                      {u.name?.[0]?.toUpperCase() || "U"}
+                    </div>
+                    <div className="text-sm">
+                      <div className="font-medium text-slate-200">{u.name}</div>
+                      <div className="text-slate-400">{u.email}</div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => removeUser(u._id)}
+                    className="rounded-lg border border-white/15 bg-red-500/10 px-3 py-1.5 text-xs text-red-200 hover:bg-red-500/20"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+      </div>
+
+      <aside className="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
+        <div className="font-semibold mb-1">Assignment Info</div>
+        <ul className="list-disc pl-5 space-y-1">
+          <li>Only students can be assigned.</li>
+          <li>Assigned users get email notifications.</li>
+          <li>You can add/remove later from the dashboard.</li>
+        </ul>
+      </aside>
+
+      <NavRow
+        onPrev={onPrev}
+        right={
+          <div className="flex gap-2">
+            <button onClick={handleSkip} disabled={loading} className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-slate-200">
+              Skip Assignment
+            </button>
+            <button
+              onClick={handleNext}
+              disabled={loading}
+              className="rounded-xl border border-white/15 px-5 py-2 text-white"
+              style={{ background: "linear-gradient(90deg,#f0abfc33,#22d3ee33)" }}
+            >
+              Next: Review & Publish
+            </button>
+          </div>
+        }
+      />
+    </div>
+  );
+};
+
+export default AssignUsersStep;
+
+function Header({ title, subtitle }) {
+  return (
+    <div>
+      <div className="text-2xl font-bold">{title}</div>
+      {subtitle && <div className="text-slate-400">{subtitle}</div>}
+    </div>
+  );
+}
+function NavRow({ onPrev, right }) {
+  return (
+    <div className="flex justify-between pt-6 border-t border-white/10">
+      <button
+        onClick={onPrev}
+        className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-slate-200"
+      >
+        Previous
+      </button>
+      {right}
+    </div>
+  );
+}
