@@ -8,7 +8,7 @@ export const AppContext = createContext();
 export const AppContextProvider = (props) => {
 
   const backendUrl = process.env.NODE_ENV === 'production'
-  ? 'https://onlinecoursemodule.onrender.com' // প্রোডাকশনে এই URL ব্যবহৃত হবে
+  ? 'https://online-course-module.onrender.com' // প্রোডাকশনে এই URL ব্যবহৃত হবে
   : 'http://localhost:5250';              // লোকালে এই URL ব্যবহৃত হবে
   
   const [isLoggedIn, setIsLoggedIn] = useState(false);
