@@ -1,5 +1,3 @@
-
-
 // src/components/Navbar.jsx
 import React, { useState, useContext, useRef, useEffect } from "react";
 import { assets } from "../assets/assets";
@@ -180,6 +178,17 @@ const Navbar = () => {
                           }}
                         >
                           Dashboard
+                        </button>
+                      </li>
+                      <li>
+                        <button
+                          className="w-full text-left px-4 py-2 hover:bg-slate-100"
+                          onClick={() => {
+                            navigate("/my-learning");
+                            setProfileOpen(false);
+                          }}
+                        >
+                          My Learning
                         </button>
                       </li>
 

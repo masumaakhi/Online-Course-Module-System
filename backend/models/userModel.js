@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
 );
 
 // Index ঠিক করার জন্য আগে ensureIndexes করতে হবে
-userSchema.index({ googleId: 1 }, { sparse: true });
+// userSchema.index({ googleId: 1 }, { sparse: true });
 
 const userModel =
   mongoose.models.user || mongoose.model("user", userSchema);

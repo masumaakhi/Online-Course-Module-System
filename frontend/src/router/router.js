@@ -17,6 +17,8 @@ import CourseDetails from "../pages/CourseDetails";
 import EditCourse from "../pages/EditCourse";
 import MyLearning from "../pages/MyLearning";
 import StudentDashboard from "../pages/StudentDashboard";
+import PaymentProcess from "../pages/PaymentProcess";
+import PaymentOptions from "../pages/PaymentOptions";
 
 const router = createBrowserRouter([
   {
@@ -35,9 +37,13 @@ const router = createBrowserRouter([
       { path: "instructor/dashboard", element: <InstructorDashboard /> },
       { path: "courses", element: <CourseCatalog /> },
       { path: "course/:id", element: <CourseDetails /> },
+      { path: "checkout/:id", element: <PaymentOptions /> },
       { path: "edit-course/:id", element: <EditCourse /> },
       { path:"my-learning", element: <MyLearning />},
-      { path:"dashboard", element: <StudentDashboard />}
+      { path:"dashboard", element: <StudentDashboard />},
+      { path: "/payment-process/:orderId", element: <PaymentProcess />},
+      { path: "/payment/success", element: <PaymentProcess /> },
+      { path: "/payment/cancel", element: <PaymentProcess /> },
     ],
   },
 ]);
