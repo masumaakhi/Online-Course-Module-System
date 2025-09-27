@@ -2,42 +2,48 @@
 const jwt = require("jsonwebtoken");
 const userModel = require("../models/userModel.js");
 
+// helper: cookie বা Authorization header থেকে টোকেন বের করা
+function extractToken(req) {
+  // 1) HttpOnly cookie
+  if (req.cookies && req.cookies.token) return req.cookies.token;
+
+  // 2) Authorization: Bearer <token>
+  const h = req.headers.authorization || req.headers.Authorization;
+  if (h && typeof h === "string" && h.startsWith("Bearer ")) {
+    return h.split(" ")[1];
+  }
+  return null;
+}
+
 // General Auth Middleware
 const userAuth = async (req, res, next) => {
-    const { token } = req.cookies;
+  const token = extractToken(req);
+  if (!token) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
 
-    if (!token) {
-        return res.json({ success: false});
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await userModel.findById(decoded.id).lean();
+    if (!user) {
+      return res.status(401).json({ success: false, message: "User not found" });
     }
-
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await userModel.findById(decoded.id);
-
-        if (!user) {
-            return res.json({ success: false, message: "User not found" });
-
-        }
-
-        req.user = user; // Store user info for next middleware
-        next();
-    } catch (error) {
-        res.json({ success: false, message: error.message });
-    }
-};
-
-// Admin Middleware
-const isAdmin = async (req, res, next) => {
-    if (req.user.role !== 'admin') {
-        return res.json({ success: false, message: "Access denied. Admins only." });
-    }
+    req.user = user; // পরের হ্যান্ডলারগুলোর জন্য ইউজার সেট
     next();
+  } catch (err) {
+    const msg = err.name === "TokenExpiredError" ? "Token expired" : "Invalid token";
+    return res.status(401).json({ success: false, message: msg });
+  }
 };
 
- const verifyAdmin = [userAuth, isAdmin];
+// Admin guard
+const isAdmin = (req, res, next) => {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ success: false, message: "Access denied. Admins only." });
+  }
+  next();
+};
 
- module.exports = {
-    userAuth,
-    isAdmin,
-    verifyAdmin
- }
+const verifyAdmin = [userAuth, isAdmin];
+
+module.exports = { userAuth, isAdmin, verifyAdmin };
