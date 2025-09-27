@@ -38,17 +38,17 @@ authRouter.get("/google/callback", (req, res, next) => {
     const token = user.token;
     const isProd = process.env.NODE_ENV === "production";
 
-    // cross-site হলে Firefox/Safari এর জন্য SameSite=None; Secure আবশ্যক
+    // Cookie (Chrome/Edge এ ভালো কাজ করে)
     res.cookie("token", token, {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
+      path: "/",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // সাথে query তেও দিচ্ছি, যাতে ফ্রন্টএন্ড localStorage-এ রেখে
-    // সব রিকোয়েস্টে Authorization: Bearer <token> পাঠাতে পারে
-    return res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
+    // Firefox/ITP safe fallback → token query দিয়ে frontend এ রিডাইরেক্ট
+    return res.redirect(`${process.env.CLIENT_URL}/auth/landing?token=${token}`);
   })(req, res, next);
 });
 
