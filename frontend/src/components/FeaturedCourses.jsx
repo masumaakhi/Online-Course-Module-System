@@ -74,7 +74,7 @@ export default function FeaturedCourses() {
       const params = new URLSearchParams();
       params.set("page", "1");
       params.set("limit", String(LIMIT));
-      // params.set("status", "published"); // <- enable if needed
+      // params.set("status", "published");
       if (activeCat) params.set("category", activeCat);
       params.set("sort", "-createdAt");
 
@@ -125,7 +125,15 @@ export default function FeaturedCourses() {
             </button>
           </div>
 
-          <div className="flex gap-1 rounded-2xl border border-white/10 bg-white/5 p-1 w-fit">
+          {/* ⬇️ Mobile-first scrollable tabs */}
+          <div
+            className="
+              flex gap-1 rounded-2xl border border-white/10 bg-white/5 p-1
+              w-full sm:w-auto
+              overflow-x-auto flex-nowrap scroll-smooth
+              [-webkit-overflow-scrolling:touch]
+            "
+          >
             {TABS.map((t) => {
               const active = t.key === activeCat;
               return (
@@ -133,7 +141,7 @@ export default function FeaturedCourses() {
                   key={t.label}
                   type="button"
                   onClick={() => setActiveCat(t.key)}
-                  className={`px-3 sm:px-4 py-2 text-sm rounded-xl transition ${
+                  className={`shrink-0 px-3 sm:px-4 py-2 text-sm rounded-xl transition ${
                     active
                       ? "bg-white/10 text-white"
                       : "text-slate-300 hover:bg-white/10"
@@ -169,7 +177,7 @@ export default function FeaturedCourses() {
             <div className="mt-3">
               <Link
                 to="/courses"
-                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
+                className="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-sm hover:bg-white/10"
               >
                 Browse all courses →
               </Link>
@@ -180,7 +188,7 @@ export default function FeaturedCourses() {
             <FeaturedCard
               key={c._id || c.id}
               course={c}
-              enrolledCourseIds={enrolledCourseIds} // ✅ pass membership set
+              enrolledCourseIds={enrolledCourseIds}
             />
           ))
         )}
@@ -216,7 +224,7 @@ function FeaturedCard({ course, enrolledCourseIds }) {
   } = course || {};
 
   const courseId = _id || id;
-  const enrolled = enrolledCourseIds?.has(String(courseId)); // ✅ use courseId
+  const enrolled = enrolledCourseIds?.has(String(courseId));
 
   // ✅ Robust rating: supports number or { average, count }
   const rawRating = rating;
@@ -271,13 +279,14 @@ function FeaturedCard({ course, enrolledCourseIds }) {
         {/* Content */}
         <div className="min-w-0 flex-1">
           <Link to={`/course/${courseId}`} className="block">
-            <h3 className="text-xl sm:text-2xl font-extrabold leading-snug line-clamp-2">
+            <h3 className="text-lg sm:text-2xl font-extrabold leading-snug line-clamp-2">
               {title}
             </h3>
           </Link>
           <div className="mt-1 text-slate-300 line-clamp-1">{description}</div>
 
-          <div className="mt-2 flex items-center gap-3 text-sm">
+          {/* ⬇️ wrap allowed so ছোট স্ক্রিনে ভাঙবে না */}
+          <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-3 text-sm">
             <span className="rounded-full bg-white/5 border border-white/10 px-2 py-0.5">
               {category}
             </span>
@@ -285,7 +294,8 @@ function FeaturedCard({ course, enrolledCourseIds }) {
             <span className="text-slate-400">{formatK(enrollmentCount)} students</span>
           </div>
 
-          <div className="mt-3 flex items-center justify-between">
+          {/* ⬇️ wrap + gap so button নিচে নামতে পারে */}
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
             <div className="text-sm">
               {isFree ? (
                 <span className="text-emerald-300 font-semibold">Free</span>

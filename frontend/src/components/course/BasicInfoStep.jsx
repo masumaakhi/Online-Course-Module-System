@@ -1,5 +1,4 @@
 // src/components/course/BasicInfoStep.jsx
-
 import React, { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -14,7 +13,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
     language: data.language || "English",
     prerequisites: data.prerequisites || [],
     objectives: data.objectives || [],
-    thumbnail: data.thumbnail || "", // ← thumbnail kept in state
+    thumbnail: data.thumbnail || "",
   });
 
   const [newTag, setNewTag] = useState("");
@@ -33,14 +32,6 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
     "Other",
   ];
   const difficulties = ["Beginner", "Intermediate", "Advanced"];
-  const languages = [
-    "English",
-    "Bengali",
-    "Hindi",
-    "Spanish",
-    "French",
-    "German",
-  ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -93,21 +84,22 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-[450px]:space-y-5">
       <Header
         title="Basic Information"
         subtitle="Provide the essential details about your course."
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="space-y-4">
+        {/* LEFT */}
+        <div className="space-y-4 max-[450px]:space-y-3">
           <Field label="Course Title *">
             <input
               name="title"
               value={formData.title}
               onChange={handleInputChange}
               placeholder="Enter course title"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[450px]:py-2 max-[350px]:text-sm"
             />
           </Field>
 
@@ -118,7 +110,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               value={formData.description}
               onChange={handleInputChange}
               placeholder="Describe what students will learn…"
-              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[350px]:text-sm"
             />
           </Field>
 
@@ -141,8 +133,9 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               </DarkSelect>
             </Field>
 
+            {/* Audience */}
             <Field label="Target Audience">
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
                 {[
                   { id: "general", label: "General" },
                   { id: "corporate", label: "Corporate" },
@@ -154,7 +147,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                       setFormData((p) => ({ ...p, audience: o.id }))
                     }
                     className={
-                      "rounded-xl border px-3 py-2 " +
+                      "rounded-xl border px-3 py-2 max-[450px]:py-1.5 max-[350px]:text-sm " +
                       (formData.audience === o.id
                         ? "border-fuchsia-400/40 bg-fuchsia-500/10 text-white"
                         : "border-white/10 bg-white/5 text-slate-200")
@@ -168,20 +161,6 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
-            {/* <Field label="Difficulty">
-              <select
-                name="difficulty"
-                value={formData.difficulty}
-                onChange={handleInputChange}
-                className="w-full rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
-              >
-                {difficulties.map((d) => (
-                  <option key={d} value={d}>
-                    {d}
-                  </option>
-                ))}
-              </select>
-            </Field> */}
             {/* Difficulty */}
             <Field label="Difficulty">
               <DarkSelect
@@ -196,6 +175,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                 ))}
               </DarkSelect>
             </Field>
+
             {/* Language */}
             <Field label="Language">
               <DarkSelect
@@ -203,37 +183,32 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                 value={formData.language}
                 onChange={handleInputChange}
               >
-                {[
-                  "English",
-                  "Bengali",
-                  "Hindi",
-                  "Spanish",
-                  "French",
-                  "German",
-                ].map((l) => (
-                  <option key={l} value={l}>
-                    {l}
-                  </option>
-                ))}
+                {["English", "Bengali", "Hindi", "Spanish", "French", "German"].map(
+                  (l) => (
+                    <option key={l} value={l}>
+                      {l}
+                    </option>
+                  )
+                )}
               </DarkSelect>
             </Field>
           </div>
 
-          {/* -------- Thumbnail (URL + Preview) -------- */}
+          {/* Thumbnail */}
           <Field label="Thumbnail (URL)">
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 name="thumbnail"
                 value={formData.thumbnail}
                 onChange={handleInputChange}
                 placeholder="https://example.com/image.jpg"
-                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[350px]:text-sm"
               />
               {formData.thumbnail && (
                 <button
                   type="button"
                   onClick={() => setFormData((p) => ({ ...p, thumbnail: "" }))}
-                  className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-slate-200"
+                  className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 text-slate-200 sm:w-auto w-full"
                 >
                   Clear
                 </button>
@@ -254,10 +229,10 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               </div>
             )}
           </Field>
-          {/* ------------------------------------------- */}
 
+          {/* Tags */}
           <Field label="Tags">
-            <div className="flex gap-2 mb-2">
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
@@ -265,12 +240,12 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                   e.key === "Enter" && (e.preventDefault(), addTag())
                 }
                 placeholder="Add a tag"
-                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[350px]:text-sm"
               />
               <button
                 type="button"
                 onClick={addTag}
-                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-slate-200"
+                className="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-slate-200 sm:w-auto w-full"
               >
                 Add
               </button>
@@ -279,7 +254,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               {formData.tags.map((t) => (
                 <span
                   key={t}
-                  className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm"
+                  className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-sm break-words"
                 >
                   {t}
                   <button
@@ -295,20 +270,23 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
           </Field>
         </div>
 
-        {/* Right tips + lists */}
-        <aside className="space-y-4">
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="font-semibold">Tips</div>
-            <ul className="mt-2 list-disc pl-5 text-sm text-slate-300 space-y-1">
+        {/* RIGHT */}
+        <aside className="space-y-4 max-[450px]:space-y-3">
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 max-[350px]:p-3">
+            <div className="font-semibold max-[350px]:text-sm">Tips</div>
+            <ul className="mt-2 list-disc pl-5 text-sm text-slate-300 space-y-1 max-[350px]:text-xs">
               <li>Outcome-driven titles work best.</li>
               <li>Use tags for better discovery.</li>
               <li>Select Corporate for employee-only courses.</li>
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-2 font-semibold">Prerequisites</div>
-            <div className="flex gap-2 mb-2">
+          {/* Prerequisites */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 max-[350px]:p-3">
+            <div className="mb-2 font-semibold max-[350px]:text-sm">
+              Prerequisites
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={newPrerequisite}
                 onChange={(e) => setNewPrerequisite(e.target.value)}
@@ -316,11 +294,11 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                   e.key === "Enter" && (e.preventDefault(), addPrerequisite())
                 }
                 placeholder="Add a prerequisite"
-                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[350px]:text-sm"
               />
               <button
                 onClick={addPrerequisite}
-                className="rounded-xl border border-white/15 bg-white/5 px-3 py-2"
+                className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 sm:w-auto w-full"
                 type="button"
               >
                 Add
@@ -330,9 +308,9 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               {formData.prerequisites.map((p, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between rounded-lg border border-white/10 bg-slate-900/40 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border border-white/10 bg-slate-900/40 px-3 py-2 text-sm break-words"
                 >
-                  <span>{p}</span>
+                  <span className="pr-2">{p}</span>
                   <button
                     onClick={() => removePrerequisite(p)}
                     className="text-red-300"
@@ -345,9 +323,12 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-2 font-semibold">Learning Objectives</div>
-            <div className="flex gap-2 mb-2">
+          {/* Objectives */}
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4 max-[350px]:p-3">
+            <div className="mb-2 font-semibold max-[350px]:text-sm">
+              Learning Objectives
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2 mb-2">
               <input
                 value={newObjective}
                 onChange={(e) => setNewObjective(e.target.value)}
@@ -355,11 +336,11 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
                   e.key === "Enter" && (e.preventDefault(), addObjective())
                 }
                 placeholder="Add an objective"
-                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none"
+                className="flex-1 rounded-xl border border-white/10 bg-white/5 px-3 py-2 outline-none max-[350px]:text-sm"
               />
               <button
                 onClick={addObjective}
-                className="rounded-xl border border-white/15 bg-white/5 px-3 py-2"
+                className="rounded-xl border border-white/15 bg-white/5 px-3 py-2 sm:w-auto w-full"
                 type="button"
               >
                 Add
@@ -369,9 +350,9 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
               {formData.objectives.map((o, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between rounded-lg border border-white/10 bg-slate-900/40 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-lg border border-white/10 bg-slate-900/40 px-3 py-2 text-sm break-words"
                 >
-                  <span>{o}</span>
+                  <span className="pr-2">{o}</span>
                   <button
                     onClick={() => removeObjective(o)}
                     className="text-red-300"
@@ -390,7 +371,7 @@ const BasicInfoStep = ({ data, updateData, onNext, loading }) => {
         <button
           onClick={handleNext}
           disabled={loading}
-          className="rounded-xl border border-white/15 px-5 py-2 text-white disabled:opacity-40"
+          className="rounded-xl border border-white/15 px-5 py-2 text-white disabled:opacity-40 w-full sm:w-auto"
           style={{ background: "linear-gradient(90deg,#a78bfa33,#22d3ee33)" }}
         >
           Next: Content Upload
@@ -405,13 +386,14 @@ export default BasicInfoStep;
 function Header({ title, subtitle }) {
   return (
     <div>
-      <div className="text-2xl font-bold">{title}</div>
-      {subtitle && <div className="text-slate-400">{subtitle}</div>}
+      <div className="text-2xl max-[450px]:text-xl font-bold">{title}</div>
+      {subtitle && (
+        <div className="text-slate-400 max-[450px]:text-sm">{subtitle}</div>
+      )}
     </div>
   );
 }
 
-// ✅ Field: label color fixed
 function Field({ label, children }) {
   return (
     <label className="block">
@@ -423,15 +405,14 @@ function Field({ label, children }) {
   );
 }
 
-// ✅ common class for all dark selects
 const SELECT_BASE =
   "w-full rounded-xl border border-white/10 bg-slate-900/70 text-slate-100 " +
   "px-3 py-2 outline-none focus:ring-2 focus:ring-fuchsia-400/40 " +
-  "appearance-none [color-scheme:dark] " + // tells the browser to use dark popover UI
-  "[&>option]:bg-slate-900 [&>option]:text-slate-100 " + // style options
-  "[&>optgroup]:bg-slate-900 [&>optgroup]:text-slate-100";
+  "appearance-none [color-scheme:dark] " +
+  "[&>option]:bg-slate-900 [&>option]:text-slate-100 " +
+  "[&>optgroup]:bg-slate-900 [&>optgroup]:text-slate-100 " +
+  "max-[350px]:text-sm";
 
-// ✅ tiny helper so we get a custom caret
 function DarkSelect({ children, className = "", ...props }) {
   return (
     <div className="relative">

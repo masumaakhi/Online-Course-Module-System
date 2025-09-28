@@ -108,21 +108,29 @@ const verifyOtp = String(Math.floor(100000 + Math.random() * 900000));
     }
 };
 
- const logout = async (req, res) => {
-    try {
-        res.clearCookie('token', {
-            httpOnly: true,
-            secure: true,
-            sameSite: "none"
-        });
+// controllers/authController.js
+const logout = async (req, res) => {
+  try {
+    const isProd = process.env.NODE_ENV === "production";
 
-        return res.json({ success: true, message: "Logout Successful" });
-    } catch (error) {
-        return res.json({
-            success: false,
-            message: error.message
-        });
-    }
+    // কুকি সেট করার সময় যে অপশন ছিল, হুবহু তাই দিন
+    const cookieOpts = {
+      httpOnly: true,
+      secure: isProd,
+      sameSite: isProd ? "none" : "lax",
+      path: "/",
+    };
+
+    // ১) স্বাভাবিকভাবে ক্লিয়ার
+    res.clearCookie("token", cookieOpts);
+
+    // ২) কিছু ব্রাউজারের (Safari ইত্যাদি) জন্য ফোর্স এক্সপায়ার
+    res.cookie("token", "", { ...cookieOpts, expires: new Date(0) });
+
+    return res.json({ success: true, message: "Logout Successful" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
 };
 
 

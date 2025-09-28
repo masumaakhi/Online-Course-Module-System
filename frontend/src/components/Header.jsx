@@ -16,19 +16,19 @@ export default function Header() {
         <div className="grid items-center gap-12 lg:grid-cols-2">
           {/* Left copy */}
           <div>
-            <h1 className="text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+            <h1 className="p-4 text-3xl leading-tight font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               <span className="block">Learn, Build,</span>
               <span className="block">Get Certified</span>
             </h1>
 
-            <p className="mt-6 max-w-xl text-slate-300 text-lg leading-relaxed">
+            <p className="p-4 mt-6 max-w-xl text-slate-300 text-lg leading-relaxed">
               Live batches, hands‑on projects, and career‑ready certificates — all in one immersive platform.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-4">
+            <div className="p-4 mt-10 flex flex-wrap items-center gap-4">
               <a
                 href="#join"
-                className="inline-flex items-center justify-center rounded-xl px-6 py-3 text-base font-semibold shadow-lg ring-1 ring-white/10 transition-transform hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 bg-gradient-to-tr from-sky-500 to-indigo-500"
+                className="inline-flex items-center justify-center rounded-xl px-7 py-3 text-base font-semibold shadow-lg ring-1 ring-white/10 transition-transform hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 bg-gradient-to-tr from-sky-500 to-indigo-500"
               >
                 Join Now
               </a>
@@ -42,9 +42,9 @@ export default function Header() {
           </div>
 
           {/* Right: floating skill tiles (gradient + tilted layout) */}
-          <div className="relative mx-auto w-full max-w-md h-[22rem]">
+          <div className="relative mx-auto xs:w-[20%] md:w-full lg:w-full xs:max-w-xs md:max-w-md lg:max-w-md h-[22rem]">
             {/* glow behind tiles */}
-            <div className="pointer-events-none absolute -inset-10 -z-10 rounded-[2rem] bg-[radial-gradient(60%_60%_at_70%_30%,rgba(56,189,248,0.18),rgba(99,102,241,0.18)_50%,transparent_70%)]" />
+            <div className=" pointer-events-none absolute  -inset-10 -z-10 rounded-[2rem] bg-[radial-gradient(60%_60%_at_70%_30%,rgba(56,189,248,0.18),rgba(99,102,241,0.18)_50%,transparent_70%)]" />
 
             {/* Staggered + tilted absolute layout */}
             <TiltBadge
@@ -113,7 +113,7 @@ function TiltBadge({ label, className = "", gradient = "from-slate-500 to-slate-
           className={`pointer-events-none absolute inset-0 rounded-3xl bg-[radial-gradient(40%_40%_at_50%_15%,rgba(255,255,255,0.25),transparent_60%)] transition-opacity ${tilt.hover ? "opacity-100" : "opacity-0"}`}
         />
 
-        <div className="relative grid h-full place-content-center">
+        <div className="relative grid  h-full place-content-center">
           <span className="text-3xl font-extrabold tracking-widest drop-shadow-sm">
             {label}
           </span>

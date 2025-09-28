@@ -1,16 +1,75 @@
+// //routes/authRoutes.js
+
+// const express = require('express');
+// const passport = require('passport');
+// const {
+//   isAuthenticated,
+//   login,
+//   logout,
+//   register,
+//   resetPassword,
+//   sendResetOtp,
+//   verifyEmail,
+// } = require('../controllers/authController.js');
+// const { userAuth } = require('../middleware/userAuth.js');
+
+// const authRouter = express.Router();
+
+// // Normal Auth Routes
+// authRouter.post('/register', register);
+// authRouter.post('/login', login);
+// authRouter.post('/logout', logout);
+// authRouter.post('/verify-account', userAuth, verifyEmail);
+// authRouter.get('/is-auth', userAuth, isAuthenticated);
+// authRouter.post('/send-reset-otp', sendResetOtp);
+// authRouter.post('/reset-password', resetPassword);
+
+// // Google Auth Routes
+// authRouter.get(
+//   '/google',
+//   passport.authenticate('google', {
+//     session: false,
+//     scope: ['profile', 'email'],
+//   })
+// );
+
+
+
+// authRouter.get('/google/callback',
+//   passport.authenticate('google', { failureRedirect: '/' }),
+//   (req, res) => {
+//     const token = req.user.token; // ✅ Define first
+
+//     res.cookie("token", token, {
+//       httpOnly: true,
+//       secure: true,
+//       sameSite: "none",
+//     });
+
+//     res.redirect(`${process.env.CLIENT_URL}?token=${token}`);
+//   }
+// );
+
+// module.exports = authRouter;
+
+
 // routes/authRoutes.js
 const express = require("express");
 const passport = require("passport");
 const {
   isAuthenticated,
-  login, logout, register,
-  resetPassword, sendResetOtp, verifyEmail,
+  login,
+  logout,
+  register,
+  resetPassword,
+  sendResetOtp,
+  verifyEmail,
 } = require("../controllers/authController.js");
 const { userAuth } = require("../middleware/userAuth.js");
 
 const authRouter = express.Router();
 
-// normal auth
+// Normal auth
 authRouter.post("/register", register);
 authRouter.post("/login", login);
 authRouter.post("/logout", logout);
@@ -20,14 +79,15 @@ authRouter.post("/send-reset-otp", sendResetOtp);
 authRouter.post("/reset-password", resetPassword);
 
 // Google auth start
-authRouter.get("/google",
+authRouter.get(
+  "/google",
   passport.authenticate("google", {
     session: false,
     scope: ["profile", "email"],
   })
 );
 
-// Google callback
+// Google auth callback (session:false, cookie dev/prod safe)
 authRouter.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", { session: false }, (err, user) => {
     if (err || !user) {
@@ -38,18 +98,19 @@ authRouter.get("/google/callback", (req, res, next) => {
     const token = user.token;
     const isProd = process.env.NODE_ENV === "production";
 
-    // Cookie (Chrome/Edge এ ভালো কাজ করে)
+    // সেশন কুকি: maxAge/expires দেবেন না (ব্রাউজার/ট্যাব সেশন শেষ হলে অটো-লগআউট)
     res.cookie("token", token, {
       httpOnly: true,
       secure: isProd,
       sameSite: isProd ? "none" : "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // Firefox/ITP safe fallback → token query দিয়ে frontend এ রিডাইরেক্ট
-    return res.redirect(`${process.env.CLIENT_URL}/auth/landing?token=${token}`);
+    // ❌ টোকেন URL-এ পাঠাবেন না
+    // ✅ কুকি সেট হয়ে গেছে, সরাসরি অ্যাপে পাঠান
+    return res.redirect(`${process.env.CLIENT_URL}`); // বা /auth/signed-in ইত্যাদি
   })(req, res, next);
 });
+
 
 module.exports = authRouter;

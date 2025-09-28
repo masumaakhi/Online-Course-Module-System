@@ -237,7 +237,7 @@ export default function Footer() {
           <div className="hidden lg:block lg:h-full lg:w-px lg:justify-self-center lg:bg-white/10" />
 
           {/* Links */}
-          <div className="grid gap-10 sm:grid-cols-2 lg:col-span-2 lg:grid-cols-3">
+          <div className="grid xs:grid-cols-2 gap-10 sm:grid-cols-3 lg:col-span-2 lg:grid-cols-3">
             <NavGroup
               title="Company"
               items={[
