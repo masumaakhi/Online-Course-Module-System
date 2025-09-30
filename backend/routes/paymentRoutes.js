@@ -24,3 +24,4 @@ router.post('/ssl/fail', sslFail);
 router.post('/ssl/ipn', sslIpn);
 
 module.exports = router;
+
