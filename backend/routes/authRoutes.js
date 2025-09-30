@@ -96,19 +96,17 @@ authRouter.get("/google/callback", (req, res, next) => {
     }
 
     const token = user.token;
-    const isProd = process.env.NODE_ENV === "production";
-
-    // সেশন কুকি: maxAge/expires দেবেন না (ব্রাউজার/ট্যাব সেশন শেষ হলে অটো-লগআউট)
+    // Align cookie with email/password login to avoid Firefox cross-site issues
     res.cookie("token", token, {
       httpOnly: true,
-      secure: isProd,
-      sameSite: isProd ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/",
     });
 
-    // ❌ টোকেন URL-এ পাঠাবেন না
-    // ✅ কুকি সেট হয়ে গেছে, সরাসরি অ্যাপে পাঠান
-    return res.redirect(`${process.env.CLIENT_URL}`); // বা /auth/signed-in ইত্যাদি
+    // Cookie is set; redirect user back to app
+    return res.redirect(`${process.env.CLIENT_URL}`);
   })(req, res, next);
 });
 
