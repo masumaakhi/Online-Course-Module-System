@@ -53,9 +53,9 @@ export default function GoogleSuccess() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const t = new URLSearchParams(search).get("token");
+    const t = new URLSearchParams(search).get("user");
     if (t) {
-      localStorage.setItem("token", t);
+      localStorage.setItem("user", t);
       axios.defaults.headers.common.Authorization = `Bearer ${t}`;
       navigate("/", { replace: true });
     } else {
