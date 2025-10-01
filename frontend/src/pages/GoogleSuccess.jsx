@@ -53,27 +53,15 @@ export default function GoogleSuccess() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // URL থেকে 'token' প্যারামিটারটি খুঁজে বের করা
-    const token = new URLSearchParams(search).get("token");
-
-    if (token) {
-      // টোকেন পাওয়া গেলে localStorage-এ সেভ করা
-      localStorage.setItem("token", token);
-      
-      // ভবিষ্যতের সকল axios রিকোয়েস্টের জন্য হেডার সেট করা
-      axios.defaults.headers.common.Authorization = `Bearer ${token}`;
-      
-      // ব্যবহারকারীকে হোম পেজে রিডাইরেক্ট করা
+    const t = new URLSearchParams(search).get("token");
+    if (t) {
+      localStorage.setItem("token", t);
+      axios.defaults.headers.common.Authorization = `Bearer ${t}`;
       navigate("/", { replace: true });
     } else {
-      // টোকেন না পাওয়া গেলে লগইন পেজে ফেরত পাঠানো
       navigate("/login", { replace: true });
     }
   }, [search, navigate]);
 
-  return (
-      <div className="min-h-screen grid place-items-center">
-          <p>Logging in, please wait...</p>
-      </div>
-  );
+  return <div className="min-h-screen grid place-items-center">Logging in…</div>;
 }
