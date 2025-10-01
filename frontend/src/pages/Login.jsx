@@ -25,9 +25,6 @@ const Login = () => {
         });
 
         if (data.success) {
-          if(data.token) {
-          localStorage.setItem('token', data.token);
-        }
           setIsLoggedIn(true);
           await getUserData(); // 👈 Also add this here to load user info on login
           toast.success(data.message);
@@ -39,29 +36,30 @@ const Login = () => {
       toast.error(error.response?.data?.message || "Login failed");
     }
   };
-const handleGoogleLogin = () => {
-    try {
-        setIsLoading(true);
-        const googleLoginUrl = `${backendUrl}/api/auth/google`;
-        window.location.href = googleLoginUrl; // 👈 এই লাইনটি সাথে সাথে পেজ পরিবর্তন করে ফেলে
-    } catch (error) {
-        // এই catch ব্লকটি সাধারণত কখনও কাজ করবে না
-        console.error('error login with google', error)
-        setIsLoading(false)
+
+        const handleGoogleLogin = () => {
+        try {
+             setIsLoading(true);
+             const googleLoginUrl = `${backendUrl}/api/auth/google`;
+             window.location.href = googleLoginUrl;
+        } catch (error) {
+            console.error('error login with google', error)
+        }finally{
+            setIsLoading(false)
+        }
     }
-};
-   
+
+    const userData = localStorage.getItem('token')
 
 
 
-   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-        // যদি টোকেন থাকে, তাহলে হোম পেজে পাঠিয়ে দাও
-        navigate('/');
+    useEffect(() => {
+    if(userData) {
+        navigate('/')
+    } else{
+        navigate('/login')
     }
-    // else ব্লকের কোনো প্রয়োজন নেই
-}, [navigate]);
+    }, [userData])
 
   return (
     <div className='flex flex-col items-center mt-20 px-4 text-center'>
