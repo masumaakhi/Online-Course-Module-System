@@ -25,6 +25,9 @@ const Login = () => {
         });
 
         if (data.success) {
+          if(data.token) {
+          localStorage.setItem('token', data.token);
+        }
           setIsLoggedIn(true);
           await getUserData(); // 👈 Also add this here to load user info on login
           toast.success(data.message);
@@ -44,22 +47,22 @@ const Login = () => {
              window.location.href = googleLoginUrl;
         } catch (error) {
             console.error('error login with google', error)
-        }finally{
             setIsLoading(false)
         }
-    }
+    };
 
-    const userData = localStorage.getItem('user')
+   
 
 
 
     useEffect(() => {
-    if(userData) {
+       const token = localStorage.getItem('token');
+    if(token) {
         navigate('/')
     } else{
         navigate('/login')
     }
-    }, [userData])
+    }, [navigate])
 
   return (
     <div className='flex flex-col items-center mt-20 px-4 text-center'>
