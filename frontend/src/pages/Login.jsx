@@ -49,7 +49,7 @@ const Login = () => {
         }
     }
 
-    const userData = localStorage.getItem('token')
+    const userData = localStorage.getItem('user')
 
 
 
