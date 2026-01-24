@@ -292,6 +292,7 @@ export default function Footer() {
           </div>
         </div>
       </div>
+       <div><link rel="stylesheet" href="http://localhost:5678/webhook/49a91fda-3b22-4c83-ab9e-d7b289952250/chat" /></div>
     </footer>
   );
 }

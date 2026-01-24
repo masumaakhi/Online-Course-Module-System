@@ -148,7 +148,7 @@ const Nav = () => {
             </button>
             <button
               onClick={() => {
-                navigate("/corporate");
+                navigate("/corporates");
                 setIsMenuOpen(false);
               }}
               className="text-slate-300 hover:text-white block px-3 py-2 text-base font-medium w-full text-left"

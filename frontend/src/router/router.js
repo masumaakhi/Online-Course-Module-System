@@ -19,6 +19,8 @@ import MyLearning from "../pages/MyLearning";
 import StudentDashboard from "../pages/StudentDashboard";
 import PaymentProcess from "../pages/PaymentProcess";
 import PaymentOptions from "../pages/PaymentOptions";
+import LiveBatch from "../pages/LiveBatch";
+import Corporates from "../pages/Corporates";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +46,8 @@ const router = createBrowserRouter([
       { path: "/payment-process/:orderId", element: <PaymentProcess />},
       { path: "/payment/success", element: <PaymentProcess /> },
       { path: "/payment/cancel", element: <PaymentProcess /> },
+      { path: "/batches", element: <LiveBatch />},
+      { path: "/corporate", element: <Corporates />}
     ],
   },
 ]);

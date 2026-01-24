@@ -20,6 +20,7 @@ function App() {
         <Outlet />
         <ScrollRestoration />
       </main>
+      
       <Footer />
       <ToastContainer position="top-right" />
     </div>
