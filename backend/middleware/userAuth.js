@@ -17,18 +17,20 @@ function extractToken(req) {
 
 // General Auth Middleware
 const userAuth = async (req, res, next) => {
-  const token = extractToken(req);
-  if (!token) {
-    return res.status(401).json({ success: false, message: "Unauthorized" });
-  }
-
   try {
+    const token = extractToken(req);
+    if (!token) {
+      // এখন থেকে proper 401 status দিবো, যাতে frontend
+      // normal unauthenticated state হিসেবে silently handle করতে পারে
+      return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await userModel.findById(decoded.id).lean();
     if (!user) {
       return res.status(401).json({ success: false, message: "User not found" });
     }
-    req.user = user; // পরের হ্যান্ডলারগুলোর জন্য ইউজার সেট
+    req.user = user;
     next();
   } catch (err) {
     const msg = err.name === "TokenExpiredError" ? "Token expired" : "Invalid token";

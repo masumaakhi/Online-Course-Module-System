@@ -24,21 +24,28 @@ export const AppContextProvider = (props) => {
     const { data } = await axios.get(backendUrl + '/api/user/data', {
       withCredentials: true // যদি cookie-based token হয় : true
     });
-    console.log("Received user data:", data);
 
-    if (data.success) {
+    if (data?.success) {
       setUserData(data.userData);
       setIsLoggedIn(true);
       if (data.userData.role === "admin") {
         fetchAllUsers();
       }
     } else {
-      toast.error(data.message);
+      // unauthorized / invalid session হলে কোনো toast বা console কিছুই দেখাবো না
       setIsLoggedIn(false);
       setUserData(null);
     }
   } catch (error) {
-    toast.error(error.message);
+    // 401 মানে user লগইন করা নেই বা token invalid – silently ignore
+    if (error.response && error.response.status === 401) {
+      setIsLoggedIn(false);
+      setUserData(null);
+      return;
+    }
+
+    const msg = error.response?.data?.message || error.message || "Failed to load user data";
+    toast.error(msg);
   }
 };
 
